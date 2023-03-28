@@ -6,7 +6,7 @@ Ce projet utilise un Arduino Leonardo pour contrôler un xylophone mécanique à
 
 - Lecture et execution des notes MIDI dans la plage jouable du xylophone
 - Gestion de la velocié de frappe avec PWM
-- Gestion du volume et du vibrato à l'aide d'un servomoteur 
+- Gestion du volume et du vibrato/modulation à l'aide d'un servomoteur 
 - Fonction mute/démute pour les notes à l'aide d'un servomoteur 
 - Réponse aux messages SysEx pour l'identification du contrôleur
 
