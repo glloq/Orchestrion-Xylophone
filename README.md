@@ -39,8 +39,10 @@ Pour modifier ces paramètres, ouvrez le fichier `Settings.h` et ajustez les val
 ![schema electronique](https://github.com/glloq/Orchestrion-Xylophone/blob/main/schemas.png?raw=true)
 
 ## Matériel requis
-- Arduino Leonardo
-- Xylophone 25 notes (le code est adaptable jusqu'à 32) 
+- Alimentation 12V 1A min 
+- un cable USB pour l'arduino
+- Arduino Leonardo(ou compatible) 
+- Xylophone 25 notes (le code est adaptable de 17 a 32) 
 - 2 servomoteurs pour ServoMute et ServoVolume
 - 25 électroaimants; un pour chaque notes
 - 2 MCP23017 : pour l'extension des pins de l'arduino
