@@ -4,8 +4,8 @@
 ### plans et fichiers 3D
  -  fichiers .STL pour les supports des barres du xylophone, electroaiamants, silencieux etc et aussi les carte elec MCP et ULN2803
  -  les plans de la boite avec es positions pour les differentes parties
- -  
-
+ -  ajouter potar pour servoute et servoVolume
+ -  ajouter bouton activation leds pour gerer un ruban leds en fonction des messages recu
 
 # Orchestrion-Xylophone
 
