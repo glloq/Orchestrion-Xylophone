@@ -47,6 +47,7 @@ Pour modifier ces paramètres, ouvrez le fichier `Settings.h` et ajustez les val
 - 4 ULN2803 : pour le controle des electroaimants, la puce est faite pour ca.
 - un port femelle rond DC12V
 - un fusible de voiture 12v 2 à 3 ampères ( a adapter a votre besoin! )
+- un switch 2 position pour indiquer l'extra octave à jouer
 
 ## Bibliothèques requises
 
