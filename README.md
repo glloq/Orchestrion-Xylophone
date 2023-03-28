@@ -35,13 +35,18 @@ Le fichier `Settings.h` contient plusieurs options de configuration pour personn
 Pour modifier ces paramètres, ouvrez le fichier `Settings.h` et ajustez les valeurs en conséquence. Assurez-vous de sauvegarder vos modifications avant de téléverser le code sur votre Arduino.
 
 
-## Matériel requis
+## Schemas branchements
+![schema electronique](https://github.com/glloq/Orchestrion-Xylophone/blob/main/schemas.png?raw=true)
 
+## Matériel requis
 - Arduino Leonardo
-- Xylophone mécanique avec servomoteurs et électroaimants
-- Servomoteur pour le volume
-- Servomoteur pour la fonction mute
-- Commutateurs pour activer/désactiver les octaves supplémentaires
+- Xylophone 25 notes (le code est adaptable jusqu'à 32) 
+- 2 servomoteurs pour ServoMute et ServoVolume
+- 25 électroaimants; un pour chaque notes
+- 2 MCP23017 : pour l'extension des pins de l'arduino
+- 4 ULN2803 : pour le controle des electroaimants, la puce est faite pour ca.
+- un port femelle rond DC12V
+- un fusible de voiture 12v 2 à 3 ampères ( a adapter a votre besoin! )
 
 ## Bibliothèques requises
 
@@ -59,4 +64,4 @@ Pour modifier ces paramètres, ouvrez le fichier `Settings.h` et ajustez les val
 
 ## Licence
 
-Ce projet est sous licence MIT. Voir le fichier `LICENSE` pour plus de détails.
+Ce projet est sous licence "je partage mon taf gratuirtement si tu veut faire de l'argent dessus demande avant et on partage :D"
