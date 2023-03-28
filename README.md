@@ -16,8 +16,8 @@ Le fichier `Settings.h` contient plusieurs options de configuration pour personn
 
 ### Paramètres du xylophone
 
-- `MIN_NOTE` et `MAX_NOTE` : Définissent la plage de notes jouables sur le xylophone.
-- `NUM_NOTES` : Le nombre de notes sur le xylophone.
+- `INSTRUMENT_START_NOTE` et `INSTRUMENT_RANGE` : Définissent la plage de notes jouables sur le xylophone.
+- `INSTRUMENT_RANGE` : Le nombre de notes sur le xylophone.
 - `EXTRA_OCTAVE_SWITCH_PIN` : Le numéro de broche pour le commutateur d'octave supplémentaire.
 
 ### Paramètres des servomoteurs
