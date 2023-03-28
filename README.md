@@ -74,6 +74,9 @@ Pour modifier ces paramètres, ouvrez le fichier `Settings.h` et ajustez les val
 6. Téléversez le code sur votre Arduino Leonardo.
 7. Connectez votre Arduino à un hôte MIDI et profitez de votre xylophone mécanique contrôlé par MIDI !
 
+## patreon 
+[lien pour me soutenir](https://patreon.com/user?u=2656559&utm_medium=clipboard_copy&utm_source=copyLink&utm_campaign=creatorshare_creator&utm_content=join_link) 
+
 ## Licence
 
 Ce projet est sous licence "je partage mon taf gratuirtement si tu veut faire de l'argent dessus demande avant et on partage :D"
