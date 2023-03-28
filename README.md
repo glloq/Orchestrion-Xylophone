@@ -10,6 +10,31 @@ Ce projet utilise un Arduino Leonardo pour contrôler un xylophone mécanique à
 - Fonction mute/démute pour les notes
 - Réponse aux messages SysEx pour l'identification du contrôleur
 
+## Options de configuration
+
+Le fichier `Settings.h` contient plusieurs options de configuration pour personnaliser le fonctionnement du contrôleur Arduino Xylophone MIDI. Vous pouvez modifier ces options avant de téléverser le code sur votre Arduino.
+
+### Paramètres du xylophone
+
+- `MIN_NOTE` et `MAX_NOTE` : Définissent la plage de notes jouables sur le xylophone.
+- `NUM_NOTES` : Le nombre de notes sur le xylophone.
+- `EXTRA_OCTAVE_SWITCH_PIN` : Le numéro de broche pour le commutateur d'octave supplémentaire.
+
+### Paramètres des servomoteurs
+
+- `SERVO_ANGLE_NOTE_ON` et `SERVO_ANGLE_NOTE_OFF` : Angles des servomoteurs pour jouer et arrêter les notes.
+- `SERVO_ANGLE_MUTE_MAX` : Angle maximum pour le servomoteur de mute.
+- `SERVO_VOLUME_MIN_ANGLE_VIBRATO` et `SERVO_VOLUME_MAX_ANGLE_VIBRATO` : Limites d'angle pour le servomoteur de volume lors de l'utilisation du vibrato.
+- `SERVO_VOLUME_MIN_FREQUENCY_VIBRATO` et `SERVO_VOLUME_MAX_FREQUENCY_VIBRATO` : Plage de fréquences de vibrato pour le servomoteur de volume.
+
+### Paramètres MIDI
+
+- `CHANNEL_XYLO` : Le canal MIDI sur lequel écouter les messages MIDI.
+- `ALL_CHANNEL` : Si `true`, le contrôleur écoutera tous les canaux MIDI. Si `false`, il écoutera uniquement le canal défini par `CHANNEL_XYLO`.
+
+Pour modifier ces paramètres, ouvrez le fichier `Settings.h` et ajustez les valeurs en conséquence. Assurez-vous de sauvegarder vos modifications avant de téléverser le code sur votre Arduino.
+
+
 ## Matériel requis
 
 - Arduino Leonardo
