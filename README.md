@@ -1,4 +1,12 @@
-# ------------------------------------ WORK IN PROGRESS / TRAVAIL EN COURS -----------------------------------------
+# --- WORK IN PROGRESS / TRAVAIL EN COURS ---
+
+## Amélioration a venir
+### plans et fichiers 3D
+ -  fichiers .STL pour les supports des barres du xylophone, electroaiamants, silencieux etc et aussi les carte elec MCP et ULN2803
+ -  les plans de la boite avec es positions pour les differentes parties
+ -  
+
+
 # Orchestrion-Xylophone
 
 Ce projet utilise un Arduino Leonardo pour contrôler un xylophone mécanique à l'aide de signaux MIDI. Le xylophone est équipé de servomoteurs et d'électroaimants pour jouer les notes. Le contrôleur MIDI permet de jouer des notes et de gérer le volume et le vibrato à l'aide d'un potentiomètre et d'un servomoteur supplémentaire.
