@@ -71,7 +71,7 @@ Pour modifier ces paramètres, ouvrez le fichier `Settings.h` et ajustez les val
 1. Clonez ou téléchargez ce dépôt.
 2. Ouvrez le fichier .ino dans l'IDE Arduino.
 3. Installez la bibliothèque MIDIUSB et adafruit MCP23x17 si vous ne l'avez pas déjà fait.
-4. faites les modifications necessaire à votre montage 
+4. faites les modifications necessaire à votre montage dans settings.h
 5. Connectez votre Arduino Leonardo à votre ordinateur via un câble USB.
 6. Sélectionnez le port série approprié et le type de carte dans le menu Outils de l'IDE Arduino.
 7. Téléversez le code sur votre Arduino Leonardo.
