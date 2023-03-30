@@ -70,11 +70,12 @@ Pour modifier ces paramètres, ouvrez le fichier `Settings.h` et ajustez les val
 
 1. Clonez ou téléchargez ce dépôt.
 2. Ouvrez le fichier .ino dans l'IDE Arduino.
-3. Installez la bibliothèque MIDIUSB si vous ne l'avez pas déjà fait.
-4. Connectez votre Arduino Leonardo à votre ordinateur via un câble USB.
-5. Sélectionnez le port série approprié et le type de carte dans le menu Outils de l'IDE Arduino.
-6. Téléversez le code sur votre Arduino Leonardo.
-7. Connectez votre Arduino à un hôte MIDI et profitez de votre xylophone mécanique contrôlé par MIDI !
+3. Installez la bibliothèque MIDIUSB et adafruit MCP23x17 si vous ne l'avez pas déjà fait.
+4. faites les modifications necessaire à votre montage 
+5. Connectez votre Arduino Leonardo à votre ordinateur via un câble USB.
+6. Sélectionnez le port série approprié et le type de carte dans le menu Outils de l'IDE Arduino.
+7. Téléversez le code sur votre Arduino Leonardo.
+8. Connectez votre Arduino à un hôte MIDI et profitez de votre xylophone mécanique contrôlé par MIDI !
 
 ## patreon 
 [lien pour me soutenir](https://patreon.com/user?u=2656559&utm_medium=clipboard_copy&utm_source=copyLink&utm_campaign=creatorshare_creator&utm_content=join_link) 
