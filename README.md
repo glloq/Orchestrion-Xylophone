@@ -62,8 +62,10 @@ Pour modifier ces paramètres, ouvrez le fichier `Settings.h` et ajustez les val
 
 ## Bibliothèques requises
 
-- [MIDIUSB](https://github.com/arduino-libraries/MIDIUSB)
-
+- [MidiUSB.H](https://github.com/arduino-libraries/MIDIUSB)
+- [Adafruit_MCP23X17.h](https://github.com/adafruit/Adafruit-MCP23017-Arduino-Library)
+- avr/interrupt.h
+- Arduino.h
 ## Installation
 
 1. Clonez ou téléchargez ce dépôt.
