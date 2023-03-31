@@ -1,9 +1,14 @@
 /***********************************************************************************************************
+---------------------------------------------------------------------------------------------------------
+------------------------    Ochestrion Project  : Xolophone/Glokenspiel      ---------------------------- 
+---------------------------------------   SERVOMUTE.H      ----------------------------------------------
+_________________________________________________________________________________________________________
+
 classe pour un deplacement rapide et direct d'un servomoteur 
 est créer en indiquant un pin pwm       =    ServoMotor(int pin);
 est modifié en indiquant l'angle voulu  =    void setServoAngle(int angle);
 
-les differents parametres et reglages du systeme pour ce servo est dans settings.h
+les differents parametres et reglages du systeme pour ce servo sont dans settings.h
 ***********************************************************************************************************/
 #ifndef ServoMute_H
 #define ServoMute_H
