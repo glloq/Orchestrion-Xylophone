@@ -1,28 +1,38 @@
+/***********************************************************************************************************
+---------------------------------------------------------------------------------------------------------
+------------------------    Ochestrion Project  : Xolophone/Glokenspiel      ---------------------------- 
+---------------------------------------   MIDIHANDLER.CPP   ---------------------------------------------
+_________________________________________________________________________________________________________
+classe pour gerer les messages midi recu par usb avec MidUSB.h
+Permet de lire les differents messages comme noteOff, noteOn, certains controls change comme la modulation et le volume et un debut de communication sysex
+
+***********************************************************************************************************/
+
 #include "MidiHandler.h"
 #include <MIDIUSB.h>
 #include <Arduino.h>
 #include "settings.h" 
 
+// ----------------------------------      PUBLIC  --------------------------------------------
+MidiHandler::MidiHandler(Xylophone &xylophone, ServoVolume &servoVolume) : _xylophone(xylophone), _servoVolume(servoVolume) {
+  _extraOctaveEnabled = digitalRead(EXTRA_OCTAVE_SWITCH_PIN) == LOW;
+    if(DEBUG_HANDLER){
+    Serial.println(F("constructor handler"));  
+  }  
+}
 
-/*
-Midihandler est le cerveau du systeme, 
-il recoit les messages et decide de l'action a effectuer
-comence par verifier si on lit tout les channels ou seulement un seul
-noteOn : gere le servo pour retirer le silencieux et demande a xylophone l'activation de la note si la note est dans l'interval denotes jouée (et prend en compte le switch extraOctave)
-noteOff : gere le servo pour mettre le silencieux quand il n'y a plus de notes jouée
-controle change :
-  - volume (7) : adapte l'angle du servo pour le volume
-  - modulation (1) : fait varier l'angle du servo pour le volume depuis l'angle actuel pour le volume et l'angle 
-  
-MidiHandler initialise tout les ojets necessaire
-*/
-MidiHandler::MidiHandler(Xylophone &xylophone, ServoVolume &servoVolume)
-    : _xylophone(xylophone), _servoVolume(servoVolume) {}
+
+//*********************************************************************************************
+//******************          INITIALISE THE OBJECTS AND SETINGS
 
 void MidiHandler::begin() {
+  pinMode(EXTRA_OCTAVE_SWITCH_PIN, INPUT_PULLUP);// Définition de la broche extra octave  
   _extraOctaveEnabled = digitalRead(EXTRA_OCTAVE_SWITCH_PIN) == LOW;
-
+  _xylophone.begin();
 }
+
+//*********************************************************************************************
+//******************               HANDLE MIDI EVENTS
 
 void MidiHandler::handleMidiEvent() {
   //recupere le message midi
@@ -49,7 +59,7 @@ void MidiHandler::handleMidiEvent() {
     case 0xB0: // Control Change
       handleControlChange(data1, data2);
       break;
-    case 0xF0: // SysEx
+    case 0xF0: // SysEx => ne devrais surement pas rester pour ce projet pour l'instant
      {
         // Lisez le message SysEx
         byte sysExData[USB_EP_SIZE - 4];
@@ -77,15 +87,56 @@ void MidiHandler::handleMidiEvent() {
         handleSysEx(sysExData, sysExLength);
       }
     default:
-      // Ignorer les autres types de messages MIDI
-      break;
+    // Ignorer les autres types de messages MIDI
+    break;
+  }
+}
+//*********************************************************************************************
+//******************          FUNCTION FOR TEST 
+
+void MidiHandler::test(bool playMelody) {
+  if (playMelody) {
+    for (size_t i = 0; i < sizeof(INIT_MELODY) / sizeof(INIT_MELODY[0]); i++) {
+      handleNoteOn(INIT_MELODY[i], 127);  // Jouer la note avec une vélocité de 127
+      delay(INIT_MELODY_DELAY[i]);    // Attendre le temps indiqué dans INIT_MELODY_DELAY
+      handleNoteOff(INIT_MELODY[i]);     // Envoyer un message de note off
+    }
+  } else {
+     //joue tout les notes l'une après l'autre
+    for (byte note = INSTRUMENT_START_NOTE; note < INSTRUMENT_START_NOTE + INSTRUMENT_RANGE; note++) {
+      handleNoteOn(note, 127);  // Jouer la note avec une vélocité de 127
+      delay(20);           // Attendre 200 ms
+      _xylophone.update(); // coupe l'electroaiman      
+      handleNoteOff(note);     // Envoyer un message de note off
+      delay(200);           // Attendre 200 ms
+       }
+      
+     // handleNoteOn(INSTRUMENT_START_NOTE, 127);  // Jouer la note avec une vélocité de 127
+      
+   
+  }
+  if(DEBUG_HANDLER){
+    Serial.println(F("fin du test melodie init"));  
   }
 }
 
+void MidiHandler::update() {
+  _servoVolume.update();
+  _xylophone.update();
+  }
+  
+// ----------------------------------      PUBLIC  --------------------------------------------
+
+//*********************************************************************************************
+//******************          CHECK IF THE NOTE IS PLAYABLE
 
  bool MidiHandler:: isNotePlayable(byte note) { 
-  return note >= INSTRUMENT_START_NOTE && note < INSTRUMENT_START_NOTE + INSTRUMENT_RANGE;
+return note >= INSTRUMENT_START_NOTE && note < INSTRUMENT_START_NOTE + INSTRUMENT_RANGE;
 }
+
+
+//*********************************************************************************************
+//******************               HANDLE NOTES ON
 
 void MidiHandler::handleNoteOn( byte note, byte velocity) {
   //permet de jouer une octave en plus de chaque coté (ca devrais sonner correct ... a voir)
@@ -99,12 +150,22 @@ if (_extraOctaveEnabled) {
    // Vérifiez si la note est dans la plage jouable du xylophone
   if (isNotePlayable(note)) {
     if(velocity>0) {  
+
+        if(DEBUG_HANDLER){
+        Serial.print(F("MIDIHandler noteOn = ")); 
+        Serial.println(note); 
+      }
        // Appelle la fonction playNote de la classe Xylophone pour activer la sortie correspondante du MCP
       // avec la vélocité appropriée pour ajuster le PWM
       _xylophone.playNote(note, velocity);
+      
+    
     }      
   }
 }
+
+//*********************************************************************************************
+//******************              HANDLES NOTES OFF 
 
 void MidiHandler::handleNoteOff( byte note) {
   if (_extraOctaveEnabled) {
@@ -115,9 +176,16 @@ void MidiHandler::handleNoteOff( byte note) {
     }
   }
     if (isNotePlayable(note)) {
-       _xylophone.msgNoteOff(note);//envoi la note pour un controle plus precis possible dans le futur 
+       _xylophone.msgNoteOff(note);
+      if(DEBUG_HANDLER){
+        Serial.print(F("MIDIHandler noteOff = ")); 
+        Serial.println(note); 
+      }
     }
 }
+
+//*********************************************************************************************
+//******************             HANDLE CONTROLS CHANGE 
 
 void MidiHandler::handleControlChange(byte control, byte value) {
   switch (control) {
@@ -146,9 +214,15 @@ void MidiHandler::handleControlChange(byte control, byte value) {
   }
 }
 
+//*********************************************************************************************
+//******************             SET VOLUME
+
 void MidiHandler::setServoVolume(int volume) {
   _servoVolume.setVolume(volume);
 }
+
+//*********************************************************************************************
+//******************             SET VIBRATO WITH SERVO VOLUME
 
 void MidiHandler::setServoVolumeVibrato(int modulation) {
   if (modulation == 0) {
@@ -159,6 +233,10 @@ void MidiHandler::setServoVolumeVibrato(int modulation) {
     _servoVolume.setVibrato(true, mappedFrequency);
   }
 }
+
+//*********************************************************************************************
+//******************               HANDLE SYSTEMS EX
+
 void MidiHandler::handleSysEx(byte *data, unsigned int length) {
   // Vérifiez si le message reçu est une demande d'identification (0x06, 0x01)
   if (length >= 2 && data[0] == 0x06 && data[1] == 0x01) {
