@@ -1,27 +1,29 @@
-# --- WORK IN PROGRESS / TRAVAIL EN COURS ---
-
-## Amélioration a venir
-### plans et fichiers 3D
- -  fichiers .STL pour les supports des barres du xylophone, electroaiamants, silencieux etc et aussi les carte elec MCP et ULN2803
- -  les plans de la boite avec es positions pour les differentes parties
- -  ajouter potar pour servoute et servoVolume
- -  ajouter bouton activation leds pour gerer un ruban leds en fonction des messages recu
+> [!NOTE]
+> le code fonctionnel mais je doit revoir le code pour aller jusqu'a 6 octaves (72 notes)
 
 # Orchestrion-Xylophone
 
-Ce projet utilise un Arduino Leonardo pour contrôler un xylophone mécanique à l'aide de signaux MIDI. Le xylophone est équipé de servomoteurs et d'électroaimants pour jouer les notes. Le contrôleur MIDI permet de jouer des notes et de gérer le volume et le vibrato à l'aide d'un potentiomètre et d'un servomoteur supplémentaire.
+Ce projet utilise un Arduino Leonardo pour contrôler un xylophone mécanique à l'aide de signaux MIDI.  
+Le xylophone est équipé de solenoides pour jouer les notes et de deux servomoteurs pour la gestion du vibrato et du silencieux.
+Le contrôleur MIDI permet de jouer des notes et de gérer le volume et le vibrato à l'aide d'un potentiomètre et d'un servomoteur supplémentaire.
+Afin d'augmenter le nombre de note possible, nous pouvons utiliser un bouton pour permettre l'ajout d'une octave en jouant les note une octave au dessus et en dessous.
+
+## Schemas branchements
+![schema electronique](https://github.com/glloq/Orchestrion-Xylophone/blob/main/schemas.png?raw=true)
+Il est possible d'utiliser directement les solenoides pour frapper les plaques/notes mais l'utilisation de maillet permet un meilleur son.
 
 ## Fonctionnalités
 
-- Lecture et execution des notes MIDI dans la plage jouable du xylophone
+- Lecture et execution des notes MIDI dans la plage jouable
 - Gestion de la velocié de frappe avec PWM
 - Gestion du volume et du vibrato/modulation à l'aide d'un servomoteur 
-- Fonction mute/démute pour les notes à l'aide d'un servomoteur 
+- Fonction mute/unmute pour les notes à l'aide d'un servomoteur 
 - Réponse aux messages SysEx pour l'identification du contrôleur
 
 ## Options de configuration
 
-Le fichier `Settings.h` contient plusieurs options de configuration pour personnaliser le fonctionnement du contrôleur Arduino Xylophone MIDI. Vous pouvez modifier ces options avant de téléverser le code sur votre Arduino.
+Le fichier `Settings.h` contient plusieurs options de configuration pour personnaliser le fonctionnement du contrôleur Arduino Xylophone MIDI. 
+Vous pouvez modifier ces options avant de téléverser le code sur votre Arduino.
 
 ### Paramètres du xylophone
 
@@ -44,8 +46,6 @@ Le fichier `Settings.h` contient plusieurs options de configuration pour personn
 Pour modifier ces paramètres, ouvrez le fichier `Settings.h` et ajustez les valeurs en conséquence. Assurez-vous de sauvegarder vos modifications avant de téléverser le code sur votre Arduino.
 
 
-## Schemas branchements
-![schema electronique](https://github.com/glloq/Orchestrion-Xylophone/blob/main/schemas.png?raw=true)
 
 ## Matériel requis
 - Alimentation 12V 1A min 
@@ -66,6 +66,7 @@ Pour modifier ces paramètres, ouvrez le fichier `Settings.h` et ajustez les val
 - [Adafruit_MCP23X17.h](https://github.com/adafruit/Adafruit-MCP23017-Arduino-Library)
 - avr/interrupt.h
 - Arduino.h
+  
 ## Installation
 
 1. Clonez ou téléchargez ce dépôt.
@@ -76,9 +77,6 @@ Pour modifier ces paramètres, ouvrez le fichier `Settings.h` et ajustez les val
 6. Sélectionnez le port série approprié et le type de carte dans le menu Outils de l'IDE Arduino.
 7. Téléversez le code sur votre Arduino Leonardo.
 8. Connectez votre Arduino à un hôte MIDI et profitez de votre xylophone mécanique contrôlé par MIDI !
-
-## patreon 
-[lien pour me soutenir](https://patreon.com/user?u=2656559&utm_medium=clipboard_copy&utm_source=copyLink&utm_campaign=creatorshare_creator&utm_content=join_link) 
 
 ## Licence
 
