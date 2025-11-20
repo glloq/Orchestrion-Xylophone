@@ -1,55 +1,55 @@
 /***********************************************************************************************************
 ---------------------------------------------------------------------------------------------------------
-------------------------    Ochestrion Project  : Xolophone/Glokenspiel      ---------------------------- 
+------------------------    Orchestrion Project  : Xylophone/Glockenspiel      ----------------------------
 ----------------------------------         XYLO.INO         ---------------------------------------------
 _________________________________________________________________________________________________________
 
-les differents parametres et reglages du systeme sont dans settings.h
-
+System parameters and settings are in settings.h
 
 ***********************************************************************************************************/
 
+#include <avr/wdt.h>
 #include "MidiHandler.h"
 #include "Xylophone.h"
-#include "ServoVolume.h"
 
-// les instances pour les objets Xylophone, ServoVolume et MidiHandler
+// Create instances for Xylophone and MidiHandler objects
 Xylophone xylophone;
-ServoVolume servoVolume(SERVO_VOLUME_PIN);
-MidiHandler midiHandler(xylophone, servoVolume);
+MidiHandler midiHandler(xylophone);
 
 void setup() {
+  // Enable watchdog timer: reset if code doesn't respond within 2 seconds
+  wdt_enable(WDTO_2S);
 
-  Serial.begin(9600);
-  
- // while (!Serial) {
- //   delay(10); // Attendre que la connexion série soit établie
- // }
-  midiHandler.begin();//definition de tout les pins etc
-  Serial.println("Orchestrion : Xylophone MIDI Controller");  
- 
-  // midiHandler.test(true); // Joue la mélodie spécifiée dans INIT_MELODY
-   midiHandler.test(false);  // Joue toutes les notes l'une après l'autre avec 200 ms entre chaque note
+  Serial.begin(SERIAL_BAUD_RATE);
 
+  // Initialize MIDI handler (which initializes xylophone)
+  midiHandler.begin();
+  Serial.println(F("Orchestrion: Xylophone MIDI Controller"));
+
+  // Test modes: play init melody or play all notes sequentially
+  // midiHandler.test(true);  // Play the melody specified in INIT_MELODY
+  midiHandler.test(false);   // Play all notes one after another with 200ms between each note
 }
 
 bool _serialConnected = true;
 
 void loop() {
-  // Traitez les messages MIDI entrants
-  midiHandler.handleMidiEvent();
-  midiHandler.update(); // test pour gestion servovolume du vibrato et extinction electroaimants
+  // Pet the watchdog to prevent system reset
+  wdt_reset();
 
-// securité pour desactiver les electroaiamnts si coupure serial 
+  // Process incoming MIDI messages
+  midiHandler.handleMidiEvent();
+  midiHandler.update(); // Update electromagnet timing
+
+  // Safety feature: disable electromagnets if serial connection is lost
   if (Serial && _serialConnected) {
-    // La connexion série est toujours active
-  } else if (!Serial && !_serialConnected) {
-    // La connexion série est interrompue
+    // Serial connection is still active
+  } else if (!Serial && _serialConnected) {
+    // Serial connection was interrupted
     xylophone.reset();
     _serialConnected = false;
   } else if (Serial && !_serialConnected) {
-    // La connexion série est rétablie
+    // Serial connection was restored
     _serialConnected = true;
   }
-
 }
