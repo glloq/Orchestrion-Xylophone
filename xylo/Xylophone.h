@@ -17,7 +17,7 @@ System parameters and settings are in settings.h
 #include <Arduino.h>
 #include <Wire.h>
 #include <Adafruit_MCP23X17.h>
-#include "Settings.h"
+#include "settings.h"
 #include "Ticker.h"
 
 /**

@@ -147,9 +147,28 @@ void Xylophone::playNote(byte note, byte velocity) {
     return;  // Bounds check
   }
 
+  // Check if note is already active (prevent duplicates)
+  if (_noteActive[noteIndex]) {
+    if (DEBUG_XYLO) {
+      Serial.print(F("WARNING: Note "));
+      Serial.print(note);
+      Serial.println(F(" already active, ignoring"));
+    }
+    return;
+  }
+
   // Critical section: disable interrupts while modifying shared data
   noInterrupts();
   {
+    // Safety check: ensure active notes array won't overflow
+    if (_activeNoteCount >= INSTRUMENT_RANGE) {
+      if (DEBUG_XYLO) {
+        Serial.println(F("ERROR: Active notes array full"));
+      }
+      interrupts();
+      return;
+    }
+
     // Start ticker if this is the first note
     if (_electromagnetCount == 0) {
       _electromagnetTicker.start();
@@ -294,9 +313,22 @@ void Xylophone::checkNoteOff() {
 int Xylophone::_noteToMcpPin(byte note) {
   int noteIndex = note - INSTRUMENT_START_NOTE;
   if (noteIndex >= 0 && noteIndex < INSTRUMENT_RANGE) {
-    return magnetPins[noteIndex];
+    int pin = magnetPins[noteIndex];
+
+    // Validate pin is in expected ranges (0-15 for MCP1, 16-31 for MCP2)
+    if ((pin >= 0 && pin < 16) || (pin >= 16 && pin < 32)) {
+      return pin;
+    }
+
+    // Invalid pin mapping detected
+    if (DEBUG_XYLO) {
+      Serial.print(F("ERROR: Invalid pin mapping ("));
+      Serial.print(pin);
+      Serial.print(F(") for note "));
+      Serial.println(note);
+    }
   }
-  return -1;  // Invalid note
+  return -1;  // Invalid note or pin
 }
 
 //*********************************************************************************************

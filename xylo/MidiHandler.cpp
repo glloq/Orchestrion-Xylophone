@@ -71,19 +71,28 @@ MidiHandler::MidiHandler(Xylophone& xylophone)
 
 /**
  * @brief Initialize pins and components
+ * @return true if initialization successful, false otherwise
  */
-void MidiHandler::begin() {
+bool MidiHandler::begin() {
   // Initialize extra octave switch
   _extraOctaveSwitch.update();
   _extraOctaveEnabled = _extraOctaveSwitch.read();
 
   // Initialize xylophone hardware
-  _xylophone.begin();
+  bool xyloInitialized = _xylophone.begin();
 
   if (DEBUG_HANDLER) {
     Serial.print(F("Extra octave mode: "));
     Serial.println(_extraOctaveEnabled ? F("ENABLED") : F("DISABLED"));
+
+    if (xyloInitialized) {
+      Serial.println(F("Xylophone initialized successfully"));
+    } else {
+      Serial.println(F("ERROR: Xylophone initialization failed"));
+    }
   }
+
+  return xyloInitialized;
 }
 
 //*********************************************************************************************

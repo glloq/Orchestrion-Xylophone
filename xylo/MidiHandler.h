@@ -74,8 +74,9 @@ public:
   /**
    * @brief Initialize all components
    * @note Configures pins and initializes xylophone
+   * @return true if initialization successful, false otherwise
    */
-  void begin();
+  bool begin();
 
   /**
    * @brief Test function for startup

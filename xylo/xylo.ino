@@ -23,7 +23,15 @@ void setup() {
   Serial.begin(SERIAL_BAUD_RATE);
 
   // Initialize MIDI handler (which initializes xylophone)
-  midiHandler.begin();
+  if (!midiHandler.begin()) {
+    Serial.println(F("CRITICAL ERROR: Failed to initialize xylophone hardware"));
+    Serial.println(F("Check I2C connections and MCP23017 addresses"));
+    while (1) {
+      wdt_reset();  // Keep resetting watchdog to prevent system reset
+      delay(1000);
+    }
+  }
+
   Serial.println(F("Orchestrion: Xylophone MIDI Controller"));
 
   // Test modes: play init melody or play all notes sequentially
