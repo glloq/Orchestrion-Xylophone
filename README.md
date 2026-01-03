@@ -1,83 +1,214 @@
-> [!NOTE]
-> le code fonctionnel mais je doit revoir le code pour aller jusqu'a 6 octaves (72 notes)
-
 # Orchestrion-Xylophone
 
-Ce projet utilise un Arduino Leonardo pour contrôler un xylophone mécanique à l'aide de signaux MIDI.
-Le xylophone est équipé de solénoïdes pour jouer les notes.
-Le contrôleur MIDI permet de jouer des notes avec gestion de la vélocité via PWM.
-Afin d'augmenter le nombre de notes possibles, nous pouvons utiliser un bouton pour permettre l'ajout d'une octave en jouant les notes une octave au-dessus et en dessous.
+> **Contrôleur MIDI pour xylophone mécanique** - 3 versions disponibles
 
-## Schemas branchements
-![schema electronique](https://github.com/glloq/Orchestrion-Xylophone/blob/main/schemas.png?raw=true)
-Il est possible d'utiliser directement les solenoides pour frapper les plaques/notes mais l'utilisation de maillet permet un meilleur son.
+Ce projet permet de contrôler un xylophone mécanique (25 notes) via MIDI en utilisant des électroaimants. Disponible en 3 versions : **USB**, **Bluetooth** et **WiFi**.
 
-## Fonctionnalités
+---
 
-- Lecture et exécution des notes MIDI dans la plage jouable
-- Gestion de la vélocité de frappe avec PWM
-- Support du switch octave extra pour étendre la plage jouable
-- Gestion automatique de l'extinction des électroaimants après frappe
-- Réponse aux messages SysEx pour l'identification du contrôleur
-- Support des Control Change 121 (reset all controllers) et 123 (all notes off)
+## 🎹 Versions disponibles
 
-## Options de configuration
+### 📁 Version 1 : Arduino Leonardo - USB MIDI *(Câblé)*
+**Dossier : [`xylo/`](./xylo/)**
 
-Le fichier `Settings.h` contient plusieurs options de configuration pour personnaliser le fonctionnement du contrôleur Arduino Xylophone MIDI. 
-Vous pouvez modifier ces options avant de téléverser le code sur votre Arduino.
+- ✅ Connexion USB MIDI (câble requis)
+- ✅ Latence minimale (~1ms)
+- ✅ Setup le plus simple
+- ✅ Stabilité maximale
+- 💻 **Idéal pour** : Studio fixe, latence critique
 
-### Paramètres du xylophone
+**Bibliothèques** : MIDIUSB, Adafruit_MCP23X17, Ticker
 
-- `INSTRUMENT_START_NOTE` : Note MIDI de départ (par défaut 65 = Fa)
-- `INSTRUMENT_RANGE` : Le nombre de notes sur le xylophone (par défaut 25)
-- `EXTRA_OCTAVE_SWITCH_PIN` : Le numéro de broche pour le commutateur d'octave supplémentaire (pin 4)
-- `TIME_HIT` : Temps d'activation de l'électroaimant en millisecondes (20ms)
-- `MIN_PWM_VALUE` : Valeur PWM minimale pour activer l'électroaimant (100)
-- `PWM_PIN` : Pin de sortie pour le PWM de puissance des électroaimants (pin 6)
+---
 
-### Paramètres MIDI
+### 📁 Version 2 : ESP32 - Bluetooth BLE MIDI *(Sans fil)*
+**Dossier : [`xylo_esp32_bluetooth/`](./xylo_esp32_bluetooth/)**
 
-- `CHANNEL_XYLO` : Le canal MIDI sur lequel écouter les messages MIDI.
-- `ALL_CHANNEL` : Si `true`, le contrôleur écoutera tous les canaux MIDI. Si `false`, il écoutera uniquement le canal défini par `CHANNEL_XYLO`.
+- 🔵 Connexion **Bluetooth Low Energy**
+- ✅ Sans fil (portée 10-15m)
+- ✅ **BLE activé par défaut** - Plug & Play
+- ⚡ Compatible iOS, macOS, Android, Windows
+- 🎛️ Bouton d'appairage et LED de statut **optionnels**
+- 🔋 Faible consommation
+- 💻 **Idéal pour** : Mobilité courte distance, iOS/Android
 
-Pour modifier ces paramètres, ouvrez le fichier `Settings.h` et ajustez les valeurs en conséquence. Assurez-vous de sauvegarder vos modifications avant de téléverser le code sur votre Arduino.
+**Bibliothèques** : ESP32-BLE-MIDI, Adafruit_MCP23X17, Ticker (ESP32)
 
+**Configuration par défaut :**
+```cpp
+BLE_ENABLED_BY_DEFAULT = true   // BLE activé au démarrage
+USE_PAIRING_BUTTON = false       // Pas de bouton nécessaire
+```
 
+---
 
-## Matériel requis
-- Alimentation 12V 1A min
-- Un câble USB pour l'Arduino
-- Arduino Leonardo (ou compatible)
-- Xylophone 25 notes (le code est adaptable de 17 à 32)
-- 25 électroaimants : un pour chaque note
-- 2 MCP23017 : pour l'extension des pins de l'Arduino
-- 4 ULN2803 : pour le contrôle des électroaimants
-- Un port femelle rond DC12V
-- Un fusible de voiture 12V 2 à 3 ampères (à adapter à votre besoin)
-- Un switch 2 positions pour indiquer l'extra octave à jouer
+### 📁 Version 3 : ESP32 - WiFi AppleMIDI *(Sans fil)*
+**Dossier : [`xylo_esp32_wifi/`](./xylo_esp32_wifi/)**
 
-## Bibliothèques requises
+- 🟢 Connexion **WiFi** (RTP-MIDI/AppleMIDI)
+- ✅ Portée WiFi étendue (toute la maison)
+- ✅ Connexions multiples simultanées
+- ⚡ Compatible iOS, macOS, Windows, Linux
+- ⚙️ Configuration WiFi requise (SSID/Password)
+- 💻 **Idéal pour** : Studio avec réseau, longue portée, multi-clients
 
-- [MIDIUSB](https://github.com/arduino-libraries/MIDIUSB) - Communication MIDI via USB
-- [Adafruit_MCP23X17](https://github.com/adafruit/Adafruit-MCP23017-Arduino-Library) - Contrôle des MCP23017
-- [Ticker](https://github.com/sstaub/Ticker) - Gestion des timers non-bloquants
-- avr/interrupt.h - Bibliothèque standard Arduino
-- Arduino.h - Bibliothèque standard Arduino
-  
-## Installation
+**Bibliothèques** : AppleMIDI, WiFi (ESP32), Adafruit_MCP23X17, Ticker (ESP32)
 
-1. Clonez ou téléchargez ce dépôt.
-2. Ouvrez le fichier .ino dans l'IDE Arduino.
-3. Installez les bibliothèques requises via le gestionnaire de bibliothèques Arduino :
-   - MIDIUSB
-   - Adafruit MCP23X17
-   - Ticker
-4. Faites les modifications nécessaires à votre montage dans `settings.h`
-5. Connectez votre Arduino Leonardo à votre ordinateur via un câble USB.
-6. Sélectionnez le port série approprié et le type de carte dans le menu Outils de l'IDE Arduino.
-7. Téléversez le code sur votre Arduino Leonardo.
-8. Connectez votre Arduino à un hôte MIDI et profitez de votre xylophone mécanique contrôlé par MIDI !
+**⚠️ Configuration obligatoire dans `settings.h` :**
+```cpp
+#define WIFI_SSID "VotreSSID"
+#define WIFI_PASSWORD "VotreMotDePasse"
+```
 
-## Licence
+---
 
-Ce projet est sous licence "je partage mon taf gratuirtement si tu veut faire de l'argent dessus demande avant et on partage :D"
+## 🎯 Quelle version choisir ?
+
+| Critère | USB (Leonardo) | Bluetooth (ESP32) | WiFi (ESP32) |
+|---------|---------------|-------------------|--------------|
+| **Sans fil** | ❌ | ✅ | ✅ |
+| **Latence** | ⭐⭐⭐⭐⭐ (~1ms) | ⭐⭐⭐⭐ (~5ms) | ⭐⭐⭐ (~15ms) |
+| **Portée** | Câble USB | 10-15m | Portée WiFi |
+| **Setup** | Très simple | Simple | Moyen |
+| **Config requise** | Aucune | Aucune | WiFi SSID/Pass |
+| **Multi-clients** | ❌ | ❌ | ✅ |
+| **Prix** | ~15€ | ~8€ | ~8€ |
+| **Stabilité** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ |
+
+**Recommandations :**
+- 🎵 **Studio/Performance** → Version USB
+- 📱 **Mobile/iOS/Android** → Version Bluetooth
+- 🏠 **Réseau existant/Multi-postes** → Version WiFi
+
+---
+
+## 🔧 Matériel commun (toutes versions)
+
+### Électronique
+- **Alimentation** : 12V 1A minimum
+- **Xylophone** : 25 notes (adaptable 17-32)
+- **Électroaimants** : 25 (un par note)
+- **MCP23017** : 2 unités (extension I/O)
+- **ULN2803** : 4 unités (drivers électroaimants)
+- **Fusible** : 12V 2-3A
+- **Switch** : 2 positions (octave extra)
+
+### Contrôleurs (selon version)
+- **Version USB** : Arduino Leonardo
+- **Version Bluetooth** : ESP32 DevKit
+- **Version WiFi** : ESP32 DevKit
+
+### Câblage
+![Schéma électronique](https://github.com/glloq/Orchestrion-Xylophone/blob/main/schemas.png?raw=true)
+
+---
+
+## 📚 Fonctionnalités communes
+
+- ✅ Réception MIDI (notes, vélocité, CC)
+- ✅ 25 notes jouables (extensible)
+- ✅ Gestion vélocité via PWM
+- ✅ Switch octave extra (±1 octave)
+- ✅ Extinction auto des électroaimants
+- ✅ Control Change 121/123 (reset/all notes off)
+- ✅ Configuration flexible (settings.h)
+
+---
+
+## 🚀 Installation rapide
+
+### 1️⃣ Choisir votre version
+Consultez le tableau ci-dessus pour choisir la version adaptée à vos besoins.
+
+### 2️⃣ Suivre le README spécifique
+Chaque dossier contient un README détaillé :
+- [`xylo/README.md`](./xylo/) - Version USB
+- [`xylo_esp32_bluetooth/README.md`](./xylo_esp32_bluetooth/) - Version Bluetooth
+- [`xylo_esp32_wifi/README.md`](./xylo_esp32_wifi/) - Version WiFi
+
+### 3️⃣ Étapes générales
+```
+1. Cloner le dépôt
+2. Ouvrir le dossier de votre version
+3. Installer les bibliothèques Arduino
+4. Modifier settings.h (si nécessaire)
+5. Téléverser sur votre carte
+6. Connecter et jouer ! 🎵
+```
+
+---
+
+## 📖 Documentation
+
+### Paramètres configurables (settings.h)
+
+```cpp
+// Notes MIDI
+INSTRUMENT_START_NOTE = 65    // Note de départ (Fa)
+INSTRUMENT_RANGE = 25         // Nombre de notes
+
+// Électroaimants
+TIME_HIT = 20                 // Durée frappe (ms)
+MIN_PWM_VALUE = 100           // PWM minimum
+
+// MIDI
+ALL_CHANNEL = true            // Écoute tous canaux
+CHANNEL_XYLO = 1              // Canal spécifique si false
+
+// Pins (varient selon version)
+EXTRA_OCTAVE_SWITCH_PIN = 4   // Switch octave
+```
+
+### Pins MCP23017 (électroaimants)
+
+25 sorties distribuées sur 2 MCP23017 (adresses I2C 0x20 et 0x21).
+
+---
+
+## 🆘 Support
+
+### Problèmes courants
+
+**Les notes ne jouent pas :**
+- Vérifier les connexions I2C (MCP23017)
+- Vérifier les adresses I2C (0x20, 0x21)
+- Activer DEBUG_XYLO dans settings.h
+
+**Version Bluetooth : Dispositif invisible :**
+- Vérifier que BLE_ENABLED_BY_DEFAULT = true
+- Redémarrer l'ESP32
+- Scanner à nouveau depuis l'appareil
+
+**Version WiFi : Connexion échoue :**
+- Vérifier SSID et mot de passe dans settings.h
+- S'assurer du WiFi 2.4GHz (ESP32 incompatible 5GHz)
+- Vérifier le pare-feu (port UDP 5004-5005)
+
+---
+
+## 🔄 Historique des versions
+
+- ✅ **v1.0** - Arduino Leonardo USB MIDI
+- ✅ **v2.0** - ESP32 Bluetooth BLE (avec bouton optionnel)
+- ✅ **v3.0** - ESP32 WiFi AppleMIDI
+
+---
+
+## 📝 Notes
+
+> **Note** : Le code est fonctionnel. Extension future prévue : support 6 octaves (72 notes).
+
+---
+
+## 📄 Licence
+
+Ce projet est sous licence **"je partage mon taf gratuitement si tu veux faire de l'argent dessus demande avant et on partage :D"**
+
+---
+
+## 🙏 Crédits
+
+Projet Orchestrion-Xylophone
+- Hardware : Arduino Leonardo / ESP32
+- MIDI : MIDIUSB / BLE-MIDI / AppleMIDI
+- I/O Expansion : Adafruit MCP23017
