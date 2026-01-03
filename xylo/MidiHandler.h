@@ -24,30 +24,26 @@ MidiHandler initialise tout les ojets necessaire utilisé, dans ce cas : xylopho
 
 
 #include "Xylophone.h"
-#include "ServoVolume.h"
 
 
 class MidiHandler {
 public:
-  MidiHandler(Xylophone &xylophone, ServoVolume &_servoVolume);
-  void handleMidiEvent();// traite les messages midi recu et appel les differentes fonctions 
+  MidiHandler(Xylophone &xylophone);
+  void handleMidiEvent();// traite les messages midi recu et appel les differentes fonctions
   void begin (); //initialise tout ce qui doit l'etre
   void test(bool playMelody);
-  void update();//pour le servo volume
-  
+  void update();
+
 private:
   Xylophone& _xylophone;
-  ServoVolume _servoVolume;
-  bool _extraOctaveEnabled;  //lit si le switch extra octave est actif ou non 
-//------------------------------------------------------------------ 
+  bool _extraOctaveEnabled;  //lit si le switch extra octave est actif ou non
+//------------------------------------------------------------------
 //gestion des messages NoteOn, NoteOff
-  void handleNoteOn( byte note, byte velocity); 
+  void handleNoteOn( byte note, byte velocity);
   void handleNoteOff( byte note);
-  bool isNotePlayable(byte note);  // verifie si la note est dans l'intervalle jouable de note 
+  bool isNotePlayable(byte note);  // verifie si la note est dans l'intervalle jouable de note
 //gestion des Controls change
   void handleControlChange( byte control, byte value);//gestion des CC
-  void setServoVolume (int volume); //recoit la valeur du volume par la cc 7 et ajuste l'angle en fonction
-  void setServoVolumeVibrato (int modulation); //recoit la valeur du vibrato par la cc 1 et ajuste la frequence de vibration en fonction de l'interval indiqué dans settings
   
   ///fonction de gestion des messages System Exclusive  
   void handleSysEx(byte *data, unsigned int length);

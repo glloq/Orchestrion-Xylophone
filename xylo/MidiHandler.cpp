@@ -14,11 +14,11 @@ Permet de lire les differents messages comme noteOff, noteOn, certains controls 
 #include "settings.h" 
 
 // ----------------------------------      PUBLIC  --------------------------------------------
-MidiHandler::MidiHandler(Xylophone &xylophone, ServoVolume &servoVolume) : _xylophone(xylophone), _servoVolume(servoVolume) {
+MidiHandler::MidiHandler(Xylophone &xylophone) : _xylophone(xylophone) {
   _extraOctaveEnabled = digitalRead(EXTRA_OCTAVE_SWITCH_PIN) == LOW;
     if(DEBUG_HANDLER){
-    Serial.println(F("constructor handler"));  
-  }  
+    Serial.println(F("constructor handler"));
+  }
 }
 
 
@@ -121,9 +121,8 @@ void MidiHandler::test(bool playMelody) {
 }
 
 void MidiHandler::update() {
-  _servoVolume.update();
   _xylophone.update();
-  }
+}
   
 // ----------------------------------      PUBLIC  --------------------------------------------
 
@@ -189,48 +188,12 @@ void MidiHandler::handleNoteOff( byte note) {
 
 void MidiHandler::handleControlChange(byte control, byte value) {
   switch (control) {
-    case 7: // Volume
-      setServoVolume(value);
-      break;
-    case 64:
-    case 66:
-    case 69: // Désactiver le servoMute
-      _xylophone.activateServoMute(false);
-      break;
-    case 1:
-    case 91:
-    case 92:
-    case 94: // Gestion du vibrato
-      setServoVolumeVibrato(value);
-      break;
     case 121: // Réinitialisation de tous les contrôleurs
       _xylophone.reset();
-      setServoVolume(0);
-      setServoVolumeVibrato(0);
       break;
     case 123: // Désactiver toutes les notes
       _xylophone.reset();
       break;
-  }
-}
-
-//*********************************************************************************************
-//******************             SET VOLUME
-
-void MidiHandler::setServoVolume(int volume) {
-  _servoVolume.setVolume(volume);
-}
-
-//*********************************************************************************************
-//******************             SET VIBRATO WITH SERVO VOLUME
-
-void MidiHandler::setServoVolumeVibrato(int modulation) {
-  if (modulation == 0) {
-    _servoVolume.setVibrato(false);
-    
-  } else {
-    float mappedFrequency = map(modulation, 1, 127, SERVO_VOLUME_MIN_FREQUENCY_VIBRATO, SERVO_VOLUME_MAX_FREQUENCY_VIBRATO);
-    _servoVolume.setVibrato(true, mappedFrequency);
   }
 }
 

@@ -11,12 +11,10 @@ les differents parametres et reglages du systeme sont dans settings.h
 
 #include "MidiHandler.h"
 #include "Xylophone.h"
-#include "ServoVolume.h"
 
-// les instances pour les objets Xylophone, ServoVolume et MidiHandler
+// les instances pour les objets Xylophone et MidiHandler
 Xylophone xylophone;
-ServoVolume servoVolume(SERVO_VOLUME_PIN);
-MidiHandler midiHandler(xylophone, servoVolume);
+MidiHandler midiHandler(xylophone);
 
 void setup() {
 
