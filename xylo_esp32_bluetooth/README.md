@@ -18,8 +18,31 @@ Le xylophone est équipé de solénoïdes pour jouer les notes. Le contrôleur M
 - 🔧 Configuration PWM via **LEDC** (ESP32)
 - 🔌 Pins I2C configurables (SDA=21, SCL=22 par défaut)
 
+## 🔵 Bouton d'appairage et LED de statut
+
+Cette version inclut un système de contrôle de l'appairage BLE via bouton et LED :
+
+### 🔘 Bouton d'appairage (GPIO 0)
+- **Appui court** : Active le BLE MIDI (si désactivé)
+- **Appui long (3s)** : Désactive le BLE MIDI
+- **Par défaut** : BLE désactivé au démarrage (économie d'énergie)
+
+### 💡 LED de statut (GPIO 2)
+- **Éteinte** 🔴 : BLE désactivé
+- **Clignotante** 🟡 : BLE activé, en attente de connexion
+- **Allumée fixe** 🟢 : BLE connecté à un appareil
+
+### ⚙️ Configuration
+Dans `settings.h` :
+```cpp
+#define BLE_ENABLED_BY_DEFAULT false  // false = désactivé au démarrage
+#define LONG_PRESS_TIME 3000           // Durée appui long en ms
+#define LED_BLINK_INTERVAL 500         // Intervalle clignotement en ms
+```
+
 ## Fonctionnalités
 
+- **Contrôle d'appairage par bouton** avec LED de statut
 - Réception MIDI via Bluetooth Low Energy (BLE MIDI)
 - Lecture et exécution des notes MIDI dans la plage jouable
 - Gestion de la vélocité de frappe avec PWM (LEDC)
@@ -51,6 +74,10 @@ Le xylophone est équipé de solénoïdes pour jouer les notes. Le contrôleur M
 | I2C SCL | GPIO 22 | Configurable dans settings.h |
 | PWM Électroaimants | GPIO 25 | Utilise LEDC |
 | Switch Extra Octave | GPIO 4 | INPUT_PULLUP |
+| **Bouton BLE** | **GPIO 0** | **Bouton BOOT intégré / externe** |
+| **LED Statut BLE** | **GPIO 2** | **LED intégrée sur la plupart des ESP32** |
+
+> 💡 **Astuce** : Sur la plupart des cartes ESP32 DevKit, le bouton BOOT (GPIO 0) et la LED intégrée (GPIO 2) sont déjà présents ! Aucun câblage supplémentaire n'est nécessaire pour utiliser cette fonctionnalité.
 
 ## Bibliothèques requises
 
@@ -120,6 +147,35 @@ const int PWM_PIN = 25;
 3. Cliquer sur Téléverser
 4. Ouvrir le Moniteur Série (115200 baud)
 ```
+
+## 🎮 Utilisation du bouton d'appairage
+
+### Première utilisation
+1. Alimenter l'ESP32
+2. Le moniteur série affiche : `"BLE désactivé par défaut - Appuyez sur le bouton..."`
+3. **Appuyer brièvement** sur le bouton BOOT (GPIO 0)
+4. La LED commence à **clignoter** 🟡 - BLE est maintenant activé
+5. Le dispositif "Xylophone-BLE" est maintenant visible
+
+### Connexion à un appareil
+1. Sur votre appareil (smartphone, tablette, ordinateur)
+2. Scanner les dispositifs BLE MIDI disponibles
+3. Connecter "Xylophone-BLE"
+4. La LED passe en mode **fixe** 🟢 - Connexion établie !
+
+### Désactivation du BLE (économie d'énergie)
+1. **Maintenir appuyé** le bouton BOOT pendant **3 secondes**
+2. La LED s'**éteint** 🔴 - BLE désactivé
+3. Les connexions MIDI sont interrompues
+4. Économie d'énergie maximale
+
+### États de la LED
+
+| État LED | Signification | Action |
+|----------|--------------|--------|
+| 🔴 Éteinte | BLE désactivé | Appui court pour activer |
+| 🟡 Clignotante | BLE activé, en attente | Connecter un appareil BLE |
+| 🟢 Fixe | BLE connecté | Prêt à jouer ! |
 
 ## Connexion MIDI
 

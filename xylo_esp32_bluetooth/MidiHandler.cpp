@@ -17,8 +17,12 @@ MidiHandler* MidiHandler::_instance = nullptr;
 
 // ----------------------------------      PUBLIC  --------------------------------------------
 
-MidiHandler::MidiHandler(Xylophone &xylophone) : _xylophone(xylophone), _bleConnected(false) {
+MidiHandler::MidiHandler(Xylophone &xylophone) : _xylophone(xylophone), _bleConnected(false), _bleEnabled(BLE_ENABLED_BY_DEFAULT) {
   _extraOctaveEnabled = digitalRead(EXTRA_OCTAVE_SWITCH_PIN) == LOW;
+  _buttonPressTime = 0;
+  _buttonPressed = false;
+  _lastLedToggle = 0;
+  _ledState = false;
   _instance = this;
 
   if(DEBUG_HANDLER){
@@ -33,19 +37,20 @@ void MidiHandler::begin() {
   pinMode(EXTRA_OCTAVE_SWITCH_PIN, INPUT_PULLUP);
   _extraOctaveEnabled = digitalRead(EXTRA_OCTAVE_SWITCH_PIN) == LOW;
 
-  // Initialisation BLE MIDI
-  BLEMidiServer.begin(BLE_DEVICE_NAME);
-
-  // Configuration des callbacks
-  BLEMidiServer.setOnConnectCallback(onConnected);
-  BLEMidiServer.setOnDisconnectCallback(onDisconnected);
-  BLEMidiServer.setNoteOnCallback(onNoteOn);
-  BLEMidiServer.setNoteOffCallback(onNoteOff);
-  BLEMidiServer.setControlChangeCallback(onControlChange);
+  // Initialisation du bouton d'appairage et de la LED
+  pinMode(BLE_PAIRING_BUTTON_PIN, INPUT_PULLUP);
+  pinMode(BLE_STATUS_LED_PIN, OUTPUT);
+  digitalWrite(BLE_STATUS_LED_PIN, LOW);
 
   _xylophone.begin();
 
-  Serial.println("BLE MIDI initialisé - En attente de connexion...");
+  // Initialisation BLE selon la configuration
+  if (_bleEnabled) {
+    enableBLE();
+  } else {
+    Serial.println("BLE désactivé par défaut - Appuyez sur le bouton d'appairage pour activer");
+    digitalWrite(BLE_STATUS_LED_PIN, LOW); // LED éteinte
+  }
 }
 
 //*********************************************************************************************
@@ -123,6 +128,8 @@ void MidiHandler::test(bool playMelody) {
 }
 
 void MidiHandler::update() {
+  updatePairingButton();  // Gestion du bouton d'appairage
+  updateStatusLed();      // Gestion de la LED de statut
   _xylophone.update();
 }
 
@@ -191,5 +198,94 @@ void MidiHandler::handleControlChange(byte control, byte value) {
     case 123: // Désactiver toutes les notes
       _xylophone.reset();
       break;
+  }
+}
+
+//*********************************************************************************************
+//******************             ENABLE BLE
+
+void MidiHandler::enableBLE() {
+  if (!_bleEnabled) {
+    Serial.println("Activation du BLE MIDI...");
+
+    // Initialisation BLE MIDI
+    BLEMidiServer.begin(BLE_DEVICE_NAME);
+
+    // Configuration des callbacks
+    BLEMidiServer.setOnConnectCallback(onConnected);
+    BLEMidiServer.setOnDisconnectCallback(onDisconnected);
+    BLEMidiServer.setNoteOnCallback(onNoteOn);
+    BLEMidiServer.setNoteOffCallback(onNoteOff);
+    BLEMidiServer.setControlChangeCallback(onControlChange);
+
+    _bleEnabled = true;
+    Serial.println("BLE MIDI activé - En attente de connexion...");
+  }
+}
+
+//*********************************************************************************************
+//******************             DISABLE BLE
+
+void MidiHandler::disableBLE() {
+  if (_bleEnabled) {
+    Serial.println("Désactivation du BLE MIDI...");
+    // Note: BLEMidi ne fournit pas de méthode end(), donc on marque juste comme désactivé
+    _bleEnabled = false;
+    _bleConnected = false;
+    digitalWrite(BLE_STATUS_LED_PIN, LOW);
+    Serial.println("BLE MIDI désactivé");
+  }
+}
+
+//*********************************************************************************************
+//******************             UPDATE PAIRING BUTTON
+
+void MidiHandler::updatePairingButton() {
+  bool currentButtonState = digitalRead(BLE_PAIRING_BUTTON_PIN) == LOW; // LOW = pressé (INPUT_PULLUP)
+
+  // Détection du front montant (bouton appuyé)
+  if (currentButtonState && !_buttonPressed) {
+    _buttonPressed = true;
+    _buttonPressTime = millis();
+  }
+
+  // Détection du front descendant (bouton relâché)
+  if (!currentButtonState && _buttonPressed) {
+    unsigned long pressDuration = millis() - _buttonPressTime;
+
+    if (pressDuration >= LONG_PRESS_TIME) {
+      // Appui long : désactiver le BLE
+      disableBLE();
+    } else {
+      // Appui court : activer le BLE
+      if (!_bleEnabled) {
+        enableBLE();
+      }
+    }
+
+    _buttonPressed = false;
+  }
+}
+
+//*********************************************************************************************
+//******************             UPDATE STATUS LED
+
+void MidiHandler::updateStatusLed() {
+  if (!_bleEnabled) {
+    // BLE désactivé : LED éteinte
+    digitalWrite(BLE_STATUS_LED_PIN, LOW);
+    _ledState = false;
+  } else if (_bleConnected) {
+    // BLE connecté : LED allumée fixe
+    digitalWrite(BLE_STATUS_LED_PIN, HIGH);
+    _ledState = true;
+  } else {
+    // BLE activé mais non connecté : LED clignotante
+    unsigned long currentTime = millis();
+    if (currentTime - _lastLedToggle >= LED_BLINK_INTERVAL) {
+      _ledState = !_ledState;
+      digitalWrite(BLE_STATUS_LED_PIN, _ledState ? HIGH : LOW);
+      _lastLedToggle = currentTime;
+    }
   }
 }

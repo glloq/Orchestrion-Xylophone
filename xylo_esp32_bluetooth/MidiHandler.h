@@ -38,6 +38,18 @@ private:
   Xylophone& _xylophone;
   bool _extraOctaveEnabled;  // lit si le switch extra octave est actif ou non
   bool _bleConnected;        // statut de connexion BLE
+  bool _bleEnabled;          // BLE activé ou non
+
+  // Gestion bouton et LED d'appairage
+  unsigned long _buttonPressTime;      // Temps du début d'appui sur le bouton
+  bool _buttonPressed;                 // État du bouton
+  unsigned long _lastLedToggle;        // Dernier changement d'état de la LED
+  bool _ledState;                      // État actuel de la LED
+
+  void updatePairingButton();          // Vérifie l'état du bouton
+  void updateStatusLed();              // Met à jour l'état de la LED
+  void enableBLE();                    // Active le BLE
+  void disableBLE();                   // Désactive le BLE
 
   // Callbacks BLE
   static void onConnected();
