@@ -36,7 +36,7 @@ bool _serialConnected = true;
 void loop() {
   // Traitez les messages MIDI entrants
   midiHandler.handleMidiEvent();
-  midiHandler.update(); // test pour gestion servovolume du vibrato et extinction electroaimants
+  midiHandler.update(); // Mise à jour pour la gestion des électroaimants
 
 // securité pour desactiver les electroaiamnts si coupure serial 
   if (Serial && _serialConnected) {

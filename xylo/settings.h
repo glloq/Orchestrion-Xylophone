@@ -12,7 +12,6 @@ ________________________________________________________________________________
 #include <Arduino.h>
 #define DEBUG_HANDLER false
 #define DEBUG_XYLO 1
-#define DEBUG_SEROVOLUME false
 
 
 //definition des pins utilisé pour les differentes entrées/sorties
@@ -53,5 +52,4 @@ const byte INIT_MELODY_DELAY[] = {200, 200, 200, 200, 200, 200, 200, 200};
 #define LED_COUNT 30 // Le nombre de LEDs sur le bandeau
 */
 // ... autres variables a venir ...
-// ex potar pour gestion servo vulume et servo mute
 #endif // SETTINGS_H

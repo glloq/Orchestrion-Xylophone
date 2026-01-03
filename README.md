@@ -3,10 +3,10 @@
 
 # Orchestrion-Xylophone
 
-Ce projet utilise un Arduino Leonardo pour contrôler un xylophone mécanique à l'aide de signaux MIDI.  
-Le xylophone est équipé de solenoides pour jouer les notes et de deux servomoteurs pour la gestion du vibrato et du silencieux.
-Le contrôleur MIDI permet de jouer des notes et de gérer le volume et le vibrato à l'aide d'un potentiomètre et d'un servomoteur supplémentaire.
-Afin d'augmenter le nombre de note possible, nous pouvons utiliser un bouton pour permettre l'ajout d'une octave en jouant les note une octave au dessus et en dessous.
+Ce projet utilise un Arduino Leonardo pour contrôler un xylophone mécanique à l'aide de signaux MIDI.
+Le xylophone est équipé de solénoïdes pour jouer les notes.
+Le contrôleur MIDI permet de jouer des notes avec gestion de la vélocité via PWM.
+Afin d'augmenter le nombre de notes possibles, nous pouvons utiliser un bouton pour permettre l'ajout d'une octave en jouant les notes une octave au-dessus et en dessous.
 
 ## Schemas branchements
 ![schema electronique](https://github.com/glloq/Orchestrion-Xylophone/blob/main/schemas.png?raw=true)
@@ -14,11 +14,12 @@ Il est possible d'utiliser directement les solenoides pour frapper les plaques/n
 
 ## Fonctionnalités
 
-- Lecture et execution des notes MIDI dans la plage jouable
-- Gestion de la velocié de frappe avec PWM
-- Gestion du volume et du vibrato/modulation à l'aide d'un servomoteur 
-- Fonction mute/unmute pour les notes à l'aide d'un servomoteur 
+- Lecture et exécution des notes MIDI dans la plage jouable
+- Gestion de la vélocité de frappe avec PWM
+- Support du switch octave extra pour étendre la plage jouable
+- Gestion automatique de l'extinction des électroaimants après frappe
 - Réponse aux messages SysEx pour l'identification du contrôleur
+- Support des Control Change 121 (reset all controllers) et 123 (all notes off)
 
 ## Options de configuration
 
@@ -27,16 +28,12 @@ Vous pouvez modifier ces options avant de téléverser le code sur votre Arduino
 
 ### Paramètres du xylophone
 
-- `INSTRUMENT_START_NOTE` et `INSTRUMENT_RANGE` : Définissent la plage de notes jouables sur le xylophone.
-- `INSTRUMENT_RANGE` : Le nombre de notes sur le xylophone.
-- `EXTRA_OCTAVE_SWITCH_PIN` : Le numéro de broche pour le commutateur d'octave supplémentaire.
-
-### Paramètres des servomoteurs
-
-- `SERVO_ANGLE_NOTE_ON` et `SERVO_ANGLE_NOTE_OFF` : Angles des servomoteurs pour jouer et arrêter les notes.
-- `SERVO_ANGLE_MUTE_MAX` : Angle maximum pour le servomoteur de mute.
-- `SERVO_VOLUME_MIN_ANGLE_VIBRATO` et `SERVO_VOLUME_MAX_ANGLE_VIBRATO` : Limites d'angle pour le servomoteur de volume lors de l'utilisation du vibrato.
-- `SERVO_VOLUME_MIN_FREQUENCY_VIBRATO` et `SERVO_VOLUME_MAX_FREQUENCY_VIBRATO` : Plage de fréquences de vibrato pour le servomoteur de volume.
+- `INSTRUMENT_START_NOTE` : Note MIDI de départ (par défaut 65 = Fa)
+- `INSTRUMENT_RANGE` : Le nombre de notes sur le xylophone (par défaut 25)
+- `EXTRA_OCTAVE_SWITCH_PIN` : Le numéro de broche pour le commutateur d'octave supplémentaire (pin 4)
+- `TIME_HIT` : Temps d'activation de l'électroaimant en millisecondes (20ms)
+- `MIN_PWM_VALUE` : Valeur PWM minimale pour activer l'électroaimant (100)
+- `PWM_PIN` : Pin de sortie pour le PWM de puissance des électroaimants (pin 6)
 
 ### Paramètres MIDI
 
@@ -48,31 +45,34 @@ Pour modifier ces paramètres, ouvrez le fichier `Settings.h` et ajustez les val
 
 
 ## Matériel requis
-- Alimentation 12V 1A min 
-- un cable USB pour l'arduino
-- Arduino Leonardo(ou compatible) 
-- Xylophone 25 notes (le code est adaptable de 17 a 32) 
-- 2 servomoteurs pour ServoMute et ServoVolume
-- 25 électroaimants; un pour chaque notes
-- 2 MCP23017 : pour l'extension des pins de l'arduino
-- 4 ULN2803 : pour le controle des electroaimants, la puce est faite pour ca.
-- un port femelle rond DC12V
-- un fusible de voiture 12v 2 à 3 ampères ( a adapter a votre besoin! )
-- un switch 2 position pour indiquer l'extra octave à jouer
+- Alimentation 12V 1A min
+- Un câble USB pour l'Arduino
+- Arduino Leonardo (ou compatible)
+- Xylophone 25 notes (le code est adaptable de 17 à 32)
+- 25 électroaimants : un pour chaque note
+- 2 MCP23017 : pour l'extension des pins de l'Arduino
+- 4 ULN2803 : pour le contrôle des électroaimants
+- Un port femelle rond DC12V
+- Un fusible de voiture 12V 2 à 3 ampères (à adapter à votre besoin)
+- Un switch 2 positions pour indiquer l'extra octave à jouer
 
 ## Bibliothèques requises
 
-- [MidiUSB.H](https://github.com/arduino-libraries/MIDIUSB)
-- [Adafruit_MCP23X17.h](https://github.com/adafruit/Adafruit-MCP23017-Arduino-Library)
-- avr/interrupt.h
-- Arduino.h
+- [MIDIUSB](https://github.com/arduino-libraries/MIDIUSB) - Communication MIDI via USB
+- [Adafruit_MCP23X17](https://github.com/adafruit/Adafruit-MCP23017-Arduino-Library) - Contrôle des MCP23017
+- [Ticker](https://github.com/sstaub/Ticker) - Gestion des timers non-bloquants
+- avr/interrupt.h - Bibliothèque standard Arduino
+- Arduino.h - Bibliothèque standard Arduino
   
 ## Installation
 
 1. Clonez ou téléchargez ce dépôt.
 2. Ouvrez le fichier .ino dans l'IDE Arduino.
-3. Installez la bibliothèque MIDIUSB et adafruit MCP23x17 si vous ne l'avez pas déjà fait.
-4. faites les modifications necessaire à votre montage dans settings.h
+3. Installez les bibliothèques requises via le gestionnaire de bibliothèques Arduino :
+   - MIDIUSB
+   - Adafruit MCP23X17
+   - Ticker
+4. Faites les modifications nécessaires à votre montage dans `settings.h`
 5. Connectez votre Arduino Leonardo à votre ordinateur via un câble USB.
 6. Sélectionnez le port série approprié et le type de carte dans le menu Outils de l'IDE Arduino.
 7. Téléversez le code sur votre Arduino Leonardo.
