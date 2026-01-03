@@ -37,10 +37,12 @@ void MidiHandler::begin() {
   pinMode(EXTRA_OCTAVE_SWITCH_PIN, INPUT_PULLUP);
   _extraOctaveEnabled = digitalRead(EXTRA_OCTAVE_SWITCH_PIN) == LOW;
 
-  // Initialisation du bouton d'appairage et de la LED
+  #if USE_PAIRING_BUTTON
+  // Initialisation du bouton d'appairage et de la LED (si activé)
   pinMode(BLE_PAIRING_BUTTON_PIN, INPUT_PULLUP);
   pinMode(BLE_STATUS_LED_PIN, OUTPUT);
   digitalWrite(BLE_STATUS_LED_PIN, LOW);
+  #endif
 
   _xylophone.begin();
 
@@ -48,8 +50,12 @@ void MidiHandler::begin() {
   if (_bleEnabled) {
     enableBLE();
   } else {
+    #if USE_PAIRING_BUTTON
     Serial.println("BLE désactivé par défaut - Appuyez sur le bouton d'appairage pour activer");
     digitalWrite(BLE_STATUS_LED_PIN, LOW); // LED éteinte
+    #else
+    Serial.println("BLE désactivé - Modifiez BLE_ENABLED_BY_DEFAULT dans settings.h pour l'activer");
+    #endif
   }
 }
 
@@ -128,8 +134,10 @@ void MidiHandler::test(bool playMelody) {
 }
 
 void MidiHandler::update() {
-  updatePairingButton();  // Gestion du bouton d'appairage
-  updateStatusLed();      // Gestion de la LED de statut
+  #if USE_PAIRING_BUTTON
+  updatePairingButton();  // Gestion du bouton d'appairage (si activé)
+  updateStatusLed();      // Gestion de la LED de statut (si activé)
+  #endif
   _xylophone.update();
 }
 
@@ -232,7 +240,9 @@ void MidiHandler::disableBLE() {
     // Note: BLEMidi ne fournit pas de méthode end(), donc on marque juste comme désactivé
     _bleEnabled = false;
     _bleConnected = false;
+    #if USE_PAIRING_BUTTON
     digitalWrite(BLE_STATUS_LED_PIN, LOW);
+    #endif
     Serial.println("BLE MIDI désactivé");
   }
 }
@@ -271,6 +281,7 @@ void MidiHandler::updatePairingButton() {
 //******************             UPDATE STATUS LED
 
 void MidiHandler::updateStatusLed() {
+  #if USE_PAIRING_BUTTON
   if (!_bleEnabled) {
     // BLE désactivé : LED éteinte
     digitalWrite(BLE_STATUS_LED_PIN, LOW);
@@ -288,4 +299,5 @@ void MidiHandler::updateStatusLed() {
       _lastLedToggle = currentTime;
     }
   }
+  #endif
 }
