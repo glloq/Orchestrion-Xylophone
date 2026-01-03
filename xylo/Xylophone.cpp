@@ -15,7 +15,7 @@ classe pour gerer les actions sur le xylophone
 
 static Xylophone* XylophoneInstance;
 
-Xylophone::Xylophone(): _servoMute(SERVO_MUTE_PIN) , _electromagnetTicker(_electromagnetTickerCallback, 5, 0, MILLIS)   {
+Xylophone::Xylophone(): _electromagnetTicker(_electromagnetTickerCallback, 5, 0, MILLIS)   {
   getMaxMagnetPinBelow16();
   for (byte i = 0; i < INSTRUMENT_RANGE; i++) {
     _noteStartTime[i] = 0;
@@ -30,8 +30,8 @@ Xylophone::Xylophone(): _servoMute(SERVO_MUTE_PIN) , _electromagnetTicker(_elect
 void Xylophone::begin() {
   Wire.begin();
  if(DEBUG_XYLO){
-    Serial.println("start Xyophone init"); 
-  }    
+    Serial.println("start Xyophone init");
+  }
  if (!_mcp1.begin_I2C(MCP1_ADDR)) {
     Serial.println("Error mcp1");
     while (1);
@@ -43,18 +43,15 @@ void Xylophone::begin() {
   for (byte i = 0; i < 16; i++) {
     _mcp1.pinMode(i, OUTPUT);
     _mcp2.pinMode(i, OUTPUT);
-  
+
     _mcp1.digitalWrite(i, LOW);
     _mcp2.digitalWrite(i, LOW);
   }
-  pinMode(PWM_PIN, OUTPUT);// Définition de la broche PWM en tant que SORTIE   
+  pinMode(PWM_PIN, OUTPUT);// Définition de la broche PWM en tant que SORTIE
 
-  activateServoMute(true);//active la gestion du servomute 
-  setServoMute(true);  //init le servo en position mute
-  
   if(DEBUG_XYLO){
-    Serial.println("end Xyophone init"); 
-  }  
+    Serial.println("end Xyophone init");
+  }
 }
 
 //*********************************************************************************************
@@ -76,13 +73,10 @@ void Xylophone::getMaxMagnetPinBelow16() {
 void Xylophone::playNote(byte note, byte velocity) {
   int mcpPin = _noteToMcpPin(note);
   if (mcpPin != -1) {
-    if(_playingNotesCount==0)  {        //si il n'y a pas d'autre notes en cours      
-      _electromagnetTicker.start();     // active la gestion de la coupure des electroaimants 
-      if(_ServoMuteActive==true){       // si la gestion du servoMute est activé 
-        setServoMute(false);            //  on active le servo mute avant de jouer la note
-      }       
-    } else {setServoMute(false);}
-   
+    if(_playingNotesCount==0)  {        //si il n'y a pas d'autre notes en cours
+      _electromagnetTicker.start();     // active la gestion de la coupure des electroaimants
+    }
+
     // Mettre à jour le PWM en fonction de la vélocité
       int pwmValue = map(velocity, 0, 127, MIN_PWM_VALUE, 255);
       analogWrite(PWM_PIN, pwmValue);
@@ -91,7 +85,7 @@ void Xylophone::playNote(byte note, byte velocity) {
       _mcp1.digitalWrite(mcpPin, HIGH);
       //met a jour le tableau pour couper l'electroaiamant avec l'interuption après le temps indiqué
       _noteStartTime[mcpPin] = millis();
-      _noteActive[mcpPin] = true;      
+      _noteActive[mcpPin] = true;
     } else {
       _mcp2.digitalWrite(mcpPin - 16, HIGH);
       //met a jour le tableau pour couper l'electroaiamant avec l'interuption après le temps indiqué
@@ -100,7 +94,6 @@ void Xylophone::playNote(byte note, byte velocity) {
     }
 
     _playingNotesCount++;
-    _midiNotesCount++;
 
     if(DEBUG_XYLO){
       Serial.print("playNote: ");
@@ -127,40 +120,11 @@ void Xylophone::update() {
 }
 
 //*********************************************************************************************
-//******************             GET MSG NOTEOFF FOR SERVO MUTE
-
-//gestion des messages noteOff pour le servoMute
-void Xylophone:: msgNoteOff(byte note){
-  _midiNotesCount--;
-  if(_ServoMuteActive==true){
-    if (_midiNotesCount==0) {
-      setServoMute(true);
-    }   
-  
-  }  
-}
-
-//*********************************************************************************************
-//******************            ACTIVATE SERVO MUTE 
-
-void Xylophone::activateServoMute(bool actif) {
-  if(actif){
-    _ServoMuteActive=true;
-  }else{
-    _ServoMuteActive=false;
-  }
-}
-
-//*********************************************************************************************
 //******************            RESET THE SETTINGS
 
 void Xylophone:: reset (){
   delay(20);// attend pour etre sur qu'il n'y a plus de notes active
-  checkNoteOff(); // coupe tout les electroaiamnts 
-  setServoMute(true);
-  _midiNotesCount=0;
-  _midiNotesCount=0;
-  _ServoMuteActive=true;
+  checkNoteOff(); // coupe tout les electroaiamnts
 }
 
 //*********************************************************************************************
@@ -197,17 +161,6 @@ void Xylophone::checkNoteOff() {
 
 
 // ----------------------------------    PRIVATE   --------------------------------------------
-
-//*********************************************************************************************
-//******************             SET SERVO MUTE OR UNMUTE
-
-void Xylophone::setServoMute(bool actif) {
-  if(actif){
-    _servoMute.setServoAngle(SERVO_ANGLE_NOTE_ON);
-  }else{
-    _servoMute.setServoAngle(SERVO_ANGLE_NOTE_OFF);
-  }
-}
 
 //*********************************************************************************************
 //******************             GET MCP OUTPUT NUMBER
