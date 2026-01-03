@@ -3,19 +3,22 @@
 ------------------------    Ochestrion Project  : Xolophone/Glokenspiel      ---------------------------- 
 ---------------------------------------    MIDIHANDLER.H    ---------------------------------------------
 _________________________________________________________________________________________________________
-classe pour gerer les messages midi recu par usb avec MidUSB.h
-Permet de lire les differents messages comme noteOff, noteOn, certains controls change comme la modulation et le volume et un debut de communication sysex
+Classe pour gérer les messages MIDI reçus par USB avec MidiUSB.h
+Permet de lire les différents messages comme noteOff, noteOn, certains control change
+et un début de communication sysex.
 
-Midihandler est le cerveau du systeme, 
-il recoit les messages et decide de l'action a faire effectuer par l'instrument
-comence par verifier si on lit tout les channels ou seulement un seul
-noteOn : gere le servo pour retirer le silencieux et demande a xylophone l'activation de la note si la note est dans l'interval denotes jouée (et prend en compte le switch extraOctave)
-noteOff : gere le servo pour mettre le silencieux avec servoMute quand il n'y a plus de notes jouée
+MidiHandler est le cerveau du système,
+il reçoit les messages et décide de l'action à faire effectuer par l'instrument.
+Commence par vérifier si on lit tous les channels ou seulement un seul.
+
+noteOn : Demande à xylophone l'activation de la note si la note est dans l'intervalle
+         de notes jouées (et prend en compte le switch extraOctave)
+noteOff : Enregistre le noteOff pour gérer les compteurs de notes actives
 controle change :
-  - volume (7) : adapte l'angle du servo pour le volume
-  - modulation (1) : fait varier l'angle du servo pour le volume depuis l'angle actuel pour le volume et l'angle 
-  
-MidiHandler initialise tout les ojets necessaire utilisé, dans ce cas : xylophone et servoVolume 
+  - CC 121 : Réinitialisation de tous les contrôleurs
+  - CC 123 : Désactiver toutes les notes
+
+MidiHandler initialise tous les objets nécessaires utilisés, dans ce cas : xylophone 
 
 
 ***********************************************************************************************************/

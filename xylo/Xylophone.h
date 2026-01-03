@@ -3,12 +3,11 @@
 ------------------------    Ochestrion Project  : Xolophone/Glokenspiel      ---------------------------- 
 ---------------------------------------     XYLOPHONE.H    ----------------------------------------------
 _________________________________________________________________________________________________________
-classe pour gerer les actions sur le xylophone 
-le xylophone gere les notes on et off avec le timer1 pour desactiver les electroaiamnt pour ne pas bloquer le code 
-il est egalement possile de ne pas prendre en compte les note off en desactivant le servoMute 
-( a voir pour utilisation notes étouffé a l'avenir avec un cc ?)
+Classe pour gérer les actions sur le xylophone
+Le xylophone gère les notes on et off avec un timer pour désactiver les électroaimants
+après un temps défini sans bloquer le code.
 
-les differents parametres et reglages des notes et pour le servoMute sont dans settings.h
+Les différents paramètres et réglages des notes sont dans settings.h
 ***********************************************************************************************************/
 
 #ifndef XYLOPHONE_H
@@ -17,7 +16,7 @@ les differents parametres et reglages des notes et pour le servoMute sont dans s
 #include <Arduino.h>
 #include <Wire.h>
 #include <Adafruit_MCP23X17.h>
-#include "Settings.h"
+#include "settings.h"
 #include "Ticker.h"
 
 class Xylophone {
