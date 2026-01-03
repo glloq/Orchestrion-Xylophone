@@ -16,14 +16,15 @@ Configuration pour ESP32 avec MIDI Bluetooth (BLE)
 // Nom du dispositif Bluetooth
 #define BLE_DEVICE_NAME "Xylophone-BLE"
 
-// Pins pour le bouton d'appairage et la LED de statut
+// Pins pour le bouton d'appairage et la LED de statut (OPTIONNELS)
 const int BLE_PAIRING_BUTTON_PIN = 0;  // Bouton pour activer/désactiver le BLE (GPIO 0 = BOOT button)
 const int BLE_STATUS_LED_PIN = 2;      // LED pour indiquer l'état BLE (GPIO 2 = LED intégrée sur la plupart des ESP32)
 
 // Configuration appairage BLE
-#define BLE_ENABLED_BY_DEFAULT false  // BLE désactivé par défaut (activation par bouton)
-#define LONG_PRESS_TIME 3000           // Temps d'appui long pour désactiver BLE (ms)
-#define LED_BLINK_INTERVAL 500         // Intervalle de clignotement LED en attente de connexion (ms)
+#define BLE_ENABLED_BY_DEFAULT true    // BLE activé par défaut (true = activé au démarrage, false = nécessite le bouton)
+#define USE_PAIRING_BUTTON false        // Active/désactive la fonctionnalité bouton et LED (false = fonctionne sans bouton)
+#define LONG_PRESS_TIME 3000            // Temps d'appui long pour désactiver BLE (ms)
+#define LED_BLINK_INTERVAL 500          // Intervalle de clignotement LED en attente de connexion (ms)
 
 //definition des pins utilisé pour les differentes entrées/sorties (ESP32)
 const byte EXTRA_OCTAVE_SWITCH_PIN = 4;
